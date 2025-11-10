@@ -19,7 +19,7 @@ export default function Sidebar({ activePanel, setActivePanel }) {
             className={`p-2 rounded-lg transition-all duration-200 ${
               activePanel === id
                 ? "bg-yellow-400 text-black"
-                : "hover:bg-gray-700"
+                : "hover:bg-green-50"
             }`}
           >
             {icon}

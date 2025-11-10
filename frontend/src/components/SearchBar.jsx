@@ -1,7 +1,7 @@
 // SearchBar.jsx
 export default function SearchBar() {
   return (
-    <form className="max-w-md mx-auto w-32 sm:w-80 md:w-96">
+    <form className="max-w-md mx-auto w-32 sm:w-96 md:w-96">
       <div className="relative">
         <input
           type="search"
