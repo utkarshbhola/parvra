@@ -2,8 +2,8 @@
 export default function SlidePanel({ isOpen, onClose, content }) {
   return (
     <div
-      className={`fixed top-0 left-16 h-full bg-white shadow-lg transition-all duration-300 z-20 ${
-        isOpen ? "w-64 opacity-100" : "w-0 opacity-0"
+      className={`relative h-full bg-white shadow-lg transition-all duration-300 py-6 z-20 ${
+        isOpen ? "w-64 opacity-100 py-6" : "w-0 opacity-0 py-6"
       } overflow-hidden`}
     >
       <div className="p-4">

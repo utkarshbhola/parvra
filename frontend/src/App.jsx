@@ -9,7 +9,7 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* ✅ Only one Navbar */}
+      
       <Navbar />
 
       <div className="flex flex-1">
