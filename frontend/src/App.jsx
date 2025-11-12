@@ -3,7 +3,7 @@ import Sidebar from "./components/Sidebar";
 import SlidePanel from "./components/Sidepanel";
 import Navbar from "./components/Navbar";
 import MapView from "./components/MapView";
-import CreatePopup from "./components/PopUp"; // ✅ Make sure to import this
+import CreatePopup from "./components/CreatePopUp"; // ✅ Make sure to import this
 
 export default function App() {
   const [activePanel, setActivePanel] = useState(null);
