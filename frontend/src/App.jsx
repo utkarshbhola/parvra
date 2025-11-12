@@ -9,7 +9,7 @@ export default function App() {
   const [activePanel, setActivePanel] = useState(null);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen overflow-hidden">
       <Navbar />
 
       <div className="flex flex-1">
