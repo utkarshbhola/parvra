@@ -2,7 +2,6 @@ import { User, Globe, Calendar, Users, Plus } from "lucide-react";
 
 export default function Sidebar({ activePanel, setActivePanel }) {
   const icons = [
-    { id: "profile", icon: <User /> },
     { id: "communities", icon: <Globe /> },
     { id: "events", icon: <Calendar /> },
     { id: "friends", icon: <Users /> },
@@ -12,7 +11,7 @@ export default function Sidebar({ activePanel, setActivePanel }) {
   return (
     <div className="flex flex-col items-center justify-between bg-gray-900 text-cyan-950 w-16 py-6 h-screen">
       <div className="flex flex-col items-center space-y-6">
-        {icons.slice(0, 4).map(({ id, icon }) => (
+        {icons.slice(0, 3).map(({ id, icon }) => (
           <button
             key={id}
             onClick={() => setActivePanel(activePanel === id ? null : id)}
