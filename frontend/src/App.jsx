@@ -1,12 +1,29 @@
 import { useState } from "react";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 import SlidePanel from "./components/Sidepanel";
 import Navbar from "./components/Navbar";
 import MapView from "./components/MapView";
-import CreatePopup from "./components/CreatePopUp"; // ✅ Make sure to import this
+import CreatePopup from "./components/CreatePopUp";
+import FriendsPanel from "./components/FriendsPanel";
+import CommunitiesPanel from "./components/Communitiespanel";
+import EventsPanel from "./components/EventsPanel";
+import RightPanel from "./components/RightPanel";
 
 export default function App() {
   const [activePanel, setActivePanel] = useState(null);
+
+  const getPanelContent = () => {
+    switch (activePanel) {
+      case "communities":
+        return <CommunitiesPanel />;
+      case "events":
+        return <EventsPanel />;
+      case "friends":
+        return <FriendsPanel />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="flex flex-col h-screen overflow-hidden">
@@ -16,9 +33,9 @@ export default function App() {
         <Sidebar activePanel={activePanel} setActivePanel={setActivePanel} />
 
         <SlidePanel
-          isOpen={!!activePanel && activePanel !== "create"} // 👈 SlidePanel opens for panels except "create"
+          isOpen={!!activePanel && activePanel !== "create"}
           onClose={() => setActivePanel(null)}
-          content={<p>{activePanel} content here...</p>}
+          content={getPanelContent()}
         />
 
         <div className="flex-1 relative">
@@ -26,10 +43,11 @@ export default function App() {
         </div>
       </div>
 
-      {/* ✅ Show popup only when "create" is active */}
       {activePanel === "create" && (
         <CreatePopup onClose={() => setActivePanel(null)} />
       )}
+
+      <RightPanel />
     </div>
   );
 }
