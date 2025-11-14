@@ -42,7 +42,7 @@ export default function App() {
         <div className="flex-1 relative overflow-hidden z-0">
           <MapView />
         </div>
-
+        {/* just checking commits */}
         
       </div>
 
