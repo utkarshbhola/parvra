@@ -4,7 +4,7 @@ import protectedRoutes from "./routes/protected.js";
 
 dotenv.config();
 
-app.use("/protected", protectedRoutes);
+app.use("/me", protectedRoutes);
 
 const PORT = process.env.PORT || 3000;
 
