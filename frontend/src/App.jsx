@@ -11,7 +11,7 @@ import FriendsPanel from "./components/FriendsPanel";
 import CommunitiesPanel from "./components/CommunitiesPanel";
 import EventsPanel from "./components/EventsPanel";
 import API from "./api/AxiosInstance";
-
+import Onboarding from "./components/Onboarding";
 /* ================================
    FIXED PROTECTED ROUTE
 ================================ */
@@ -87,7 +87,7 @@ function SignupPage() {
     e.preventDefault();
     await API.post("/auth/signup", form);
     alert("Signup successful!");
-    navigate("/login", { replace: true });
+    navigate("/Onboarding", { replace: true });
   };
 
   return (
@@ -176,7 +176,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-
+          <Route path="/Onboarding" element={<Onboarding />} />
           <Route
             path="/app"
             element={
