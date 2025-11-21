@@ -15,7 +15,7 @@ router.get("/me", authMiddleware, async (req, res) => {
       .from("profiles")
       .select("*")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
 

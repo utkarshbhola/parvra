@@ -12,36 +12,36 @@ router.post("/signup", async (req, res) => {
   if (!email || !password)
     return res.status(400).json({ error: "Email and password required" });
 
-  // 1. Create user in Supabase Auth
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  const { data, error } = await supabase.auth.signUp({ email, password });
 
   if (error) return res.status(400).json({ error: error.message });
 
-  const user = data.user;
+  // handle unverified email case
+  const userId = data.user?.id;
+  if (!userId) {
+    return res.json({
+      message: "Signup successful — verify your email",
+      stage: "email_verification",
+    });
+  }
 
-  // 2. Create profile record ONLY if signup succeeded
-  const { error: profileError } = await supabase.from("profiles").insert([
+  // insert profile
+  await supabase.from("profiles").insert([
     {
-      id: user.id,             // SAME AS auth.users.uid
-      email: user.email,
+      id: userId,
+      email,
       username: null,
       bio: null,
       profile_photo_url: null,
-      created_at: new Date().toISOString(),
     },
   ]);
 
-  if (profileError)
-    return res.status(500).json({ error: "User created but profile failed: " + profileError.message });
-
   return res.json({
-    message: "Signup successful. Check your email!",
-    user: user,
+    message: "Signup completed!",
+    user: data.user,
   });
 });
+
 
 /* ============================
    LOGIN
