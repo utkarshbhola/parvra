@@ -17,7 +17,6 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/protected", protectedRoutes);  // <-- HERE
 app.use("/user", userRoutes);
-app.use("/onboarding", onboardingRoutes);
 app.use("/profiles", profiles);
 app.get("/", (req, res) => {
   res.send("Parvra Backend Running 🚀");
