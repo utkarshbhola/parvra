@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://parvra.onrender.com",
+  baseURL: "https://parvra.onrender.com/",
 });
 
 // Automatically attach token

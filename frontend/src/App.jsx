@@ -68,7 +68,7 @@ function LoginPage() {
 
         <p>
           Don't have an account?{" "}
-          <a href="/signup" className="underline">Signup</a>
+          <a href="/signUp" className="underline">Signup</a>
         </p>
       </form>
     </div>
