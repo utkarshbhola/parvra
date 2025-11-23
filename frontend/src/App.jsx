@@ -87,7 +87,7 @@ function SignupPage() {
     e.preventDefault();
     await API.post("/auth/signup", form);
     alert("Signup successful!");
-    navigate("/Onboarding", { replace: true });
+    navigate("/app", { replace: true });
   };
 
   return (
