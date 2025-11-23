@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, Link } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./Context/AuthContext";
-
 import Sidebar from "./components/Sidebar";
 import SlidePanel from "./components/Sidepanel";
 import Navbar from "./components/Navbar";
@@ -68,7 +67,7 @@ function LoginPage() {
 
         <p>
           Don't have an account?{" "}
-          <Link to="/signup">Sign Up</Link>
+          
           <Link to="/signup" className="underline">Signup</Link>
         </p>
       </form>
@@ -112,7 +111,7 @@ function SignupPage() {
         <button className="bg-black text-white p-2 rounded">Signup</button>
 
         <p>
-          Have an account? <Link to="/login" className="underline">Login</Link>
+          Have an account? <a to="/login" className="underline">Login</a>
         </p>
       </form>
     </div>
