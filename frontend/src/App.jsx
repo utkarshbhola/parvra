@@ -68,7 +68,7 @@ function LoginPage() {
 
         <p>
           Don't have an account?{" "}
-          <a href="/signUp" className="underline">Signup</a>
+          <a href="/signup" className="underline">Signup</a>
         </p>
       </form>
     </div>
@@ -174,7 +174,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/signUp" element={<SignupPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           <Route
             path="/app"
             element={
