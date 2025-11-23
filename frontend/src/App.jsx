@@ -111,7 +111,7 @@ function SignupPage() {
         <button className="bg-black text-white p-2 rounded">Signup</button>
 
         <p>
-          Have an account? <a href="/login" className="underline">Login</a>
+          Have an account? <link href="/login" className="underline">Login</link>
         </p>
       </form>
     </div>
