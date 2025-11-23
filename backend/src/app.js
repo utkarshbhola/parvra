@@ -8,7 +8,10 @@ import onboardingRoutes from "./routes/onboarding.routes.js";
 import profiles from "./routes/profiles.routes.js";
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ["https://parvra.vercel.app"],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use("/auth", authRoutes);
