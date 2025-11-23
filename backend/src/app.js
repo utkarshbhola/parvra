@@ -4,7 +4,6 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import protectedRoutes from "./routes/protected.js";  // <-- HERE
 import userRoutes from "./routes/user.routes.js";
-import onboardingRoutes from "./routes/onboarding.routes.js";
 import profiles from "./routes/profiles.routes.js";
 const app = express();
 
