@@ -67,8 +67,7 @@ function LoginPage() {
 
         <p>
           Don't have an account?{" "}
-          
-          <Link to="/signup" className="underline">Signup</Link>
+          <a href="/signup" className="underline">Signup</a>
         </p>
       </form>
     </div>
@@ -111,7 +110,7 @@ function SignupPage() {
         <button className="bg-black text-white p-2 rounded">Signup</button>
 
         <p>
-          Have an account? <a to="/login" className="underline">Login</a>
+          Have an account? <a href="/login" className="underline">Login</a>
         </p>
       </form>
     </div>
