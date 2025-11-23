@@ -1,23 +1,20 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api/AxiosInstance";
+import { AuthContext } from "../Context/AuthContext";
 
 export default function SignupPage() {
+  const { signup } = useContext(AuthContext);
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("SIGNUP SUBMITTED");
-
     try {
-      const res = await API.post("/auth/signup", form);
-      console.log("SIGNUP RESPONSE:", res.data);
-
+      await signup(form.email, form.password);
       alert("Signup successful!");
-      navigate("/app");   // <— Navigation happens HERE
+      navigate("/app", { replace: true });
     } catch (err) {
-      console.error("Signup error:", err);
+      console.error("Signup failed:", err);
       alert(err.response?.data?.error || "Signup failed");
     }
   };
@@ -43,12 +40,7 @@ export default function SignupPage() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
 
-        <button
-          type="submit"
-          className="bg-black text-white p-2 rounded"
-        >
-          Signup
-        </button>
+        <button className="bg-black text-white p-2 rounded">Signup</button>
       </form>
     </div>
   );
