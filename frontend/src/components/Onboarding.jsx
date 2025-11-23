@@ -1,69 +1,78 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../api/AxiosInstance";
+import { AuthContext } from "../Context/AuthContext";
 
-export default function OnboardingPage() {
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-  const [avatar, setAvatar] = useState(
-    "https://api.dicebear.com/7.x/avataaars/svg?seed=Starter"
-  );
+export default function Onboarding() {
+  const { fetchUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  const avatars = ["CoderFox", "AstroTiger", "PixelWolf", "ZenBear", "NeonCat"];
+  const [form, setForm] = useState({
+    username: "",
+    bio: "",
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Default",
+  });
 
-  const handleSubmit = async () => {
-    await API.put("/user/update", {
-      username,
-      bio,
-      profile_photo_url: avatar,
-    });
+  const avatars = [
+    "Harry", "Luna", "Nova", "Pixel", "Echo"
+  ];
 
-    window.location.href = "/app"; // finish onboarding → go inside app
-  };
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    try {
+      await API.put("/onboarding", form);
+      await fetchUser();             // refresh AuthContext
+      navigate("/app");              // go to main app
+    } catch (err) {
+      alert(err.response?.data?.error || "Something went wrong");
+    }
+  }
 
   return (
     <div className="flex flex-col items-center p-10">
-      <h1 className="text-2xl font-bold mb-6">Set up your profile</h1>
+      <h1 className="text-2xl font-bold mb-6">Complete Your Profile</h1>
 
-      {/* Username */}
-      <input
-        type="text"
-        placeholder="Choose a username"
-        className="border p-2 mb-4 w-80"
-        onChange={(e) => setUsername(e.target.value)}
-      />
+      <form className="flex flex-col gap-4 w-96" onSubmit={handleSubmit}>
+        {/* Avatar selection */}
+        <label>Select Character Avatar</label>
+        <div className="flex gap-2">
+          {avatars.map((name) => (
+            <img
+              key={name}
+              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`}
+              className={`w-12 h-12 cursor-pointer rounded-full border
+                ${form.avatar.includes(name) ? "border-yellow-400" : "border-gray-300"}
+              `}
+              onClick={() =>
+                setForm({
+                  ...form,
+                  avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`,
+                })
+              }
+            />
+          ))}
+        </div>
 
-      {/* Bio */}
-      <textarea
-        placeholder="Short bio"
-        className="border p-2 mb-4 w-80"
-        onChange={(e) => setBio(e.target.value)}
-      />
+        {/* Username */}
+        <input
+          type="text"
+          placeholder="Choose a username"
+          className="p-2 border rounded"
+          onChange={(e) => setForm({ ...form, username: e.target.value })}
+        />
 
-      {/* Avatars */}
-      <div className="flex gap-4 mb-4">
-        {avatars.map((seed) => (
-          <img
-            key={seed}
-            src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`}
-            className={`w-16 h-16 rounded-full cursor-pointer ${
-              avatar.includes(seed) ? "ring-4 ring-yellow-400" : ""
-            }`}
-            onClick={() =>
-              setAvatar(
-                `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`
-              )
-            }
-          />
-        ))}
-      </div>
+        {/* Bio */}
+        <textarea
+          placeholder="Write about yourself"
+          className="p-2 border rounded"
+          onChange={(e) => setForm({ ...form, bio: e.target.value })}
+        />
 
-      {/* Submit */}
-      <button
-        className="bg-black text-white p-2 rounded w-80"
-        onClick={handleSubmit}
-      >
-        Save & Continue
-      </button>
+        <button className="bg-black text-white p-2 rounded">
+          Save & Continue
+        </button>
+      </form>
     </div>
   );
 }
