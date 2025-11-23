@@ -68,6 +68,7 @@ function LoginPage() {
 
         <p>
           Don't have an account?{" "}
+          <Link to="/signup">Sign Up</Link>
           <Link to="/signup" className="underline">Signup</Link>
         </p>
       </form>
