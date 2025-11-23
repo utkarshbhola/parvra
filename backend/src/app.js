@@ -9,7 +9,11 @@ import profiles from "./routes/profiles.routes.js";
 const app = express();
 
 app.use(cors({
-  origin: ["https://parvra.vercel.app"],
+  origin: [
+    "https://parvra.vercel.app",
+    "http://localhost:5173",
+    /\.vercel\.app$/      // allow all vercel preview domains
+  ],
   credentials: true
 }));
 app.use(express.json());
