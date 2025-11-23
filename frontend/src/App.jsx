@@ -2,8 +2,8 @@ import { useState, useContext } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./Context/AuthContext";
 
-import Sidebar from "./components/SideBar";
-import SlidePanel from "./components/SidePanel";
+import Sidebar from "./components/Sidebar";
+import SlidePanel from "./components/Sidepanel";
 import Navbar from "./components/Navbar";
 import MapView from "./components/MapView";
 import CreatePopup from "./components/CreatePopUp";
