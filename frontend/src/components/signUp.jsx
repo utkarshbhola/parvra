@@ -15,7 +15,7 @@ export default function SignupPage() {
       console.log("SIGNUP RESPONSE:", res.data);
 
       alert("Signup successful!");
-      navigate("/Onboarding");   // <— Navigation happens HERE
+      navigate("/app");   // <— Navigation happens HERE
     } catch (err) {
       console.error("Signup error:", err);
       alert(err.response?.data?.error || "Signup failed");
