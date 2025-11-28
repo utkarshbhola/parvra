@@ -1,27 +1,41 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import API from "../api/AxiosInstance";
 
 export default function Login() {
-  const { login } = useContext(AuthContext);
+  const { login, user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
-
-  // TEST BACKEND CONNECTION
-  useEffect(() => {
-    API.get("/")
-      .then(() => console.log("Backend connected!"))
-      .catch(() => console.log("Backend NOT connected"));
-  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
-      console.log("Trying login with:", form.email);  // GOOD LOG
+      console.log("Trying login with:", form.email);
+
+      // 1️⃣ LOGIN
       await login(form.email, form.password);
-      console.log("Login succeeded. Navigating to /app…");
-      navigate("/app");
+
+      // 2️⃣ USER NOW AVAILABLE FROM CONTEXT
+      const userId = user?.id;
+      if (!userId) {
+        console.log("User not loaded yet");
+        return;
+      }
+
+      // 3️⃣ CHECK IF PROFILE EXISTS
+      const res = await API.get(`/profiles/check`);
+      const exists = res.data?.exists;
+
+      // 4️⃣ REDIRECT BASED ON PROFILE EXISTENCE
+      if (exists) {
+        console.log("Profile exists → redirecting to /app");
+        navigate("/app");
+      } else {
+        console.log("Profile missing → redirecting to /Onboarding");
+        navigate("/Onboarding");
+      }
+
     } catch (err) {
       console.error(err);
       alert("Invalid email or password");
