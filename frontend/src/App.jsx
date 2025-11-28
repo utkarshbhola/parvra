@@ -1,7 +1,7 @@
-import { useState, useContext } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useState, useContext, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, Link } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./Context/AuthContext";
-
+import Onboarding from "./components/Onboarding";
 import Sidebar from "./components/Sidebar";
 import SlidePanel from "./components/Sidepanel";
 import Navbar from "./components/Navbar";
@@ -16,14 +16,42 @@ import API from "./api/AxiosInstance";
 ================================ */
 function ProtectedRoute({ children }) {
   const { user } = useContext(AuthContext);
+  const [checking, setChecking] = useState(true);
+  const [shouldGoOnboarding, setShouldGoOnboarding] = useState(false);
 
-  // Wait for user to load
-  if (user === undefined) return <div>Loading...</div>;
+  useEffect(() => {
+    async function check() {
+      if (user === undefined) return;   // still loading auth
+      if (user === null) {              // not logged in
+        setChecking(false);
+        return;
+      }
+
+      // Logged in → check onboarding status
+      try {
+        const res = await API.get("/profiles/check");
+        if (!res.data.exists) {
+          setShouldGoOnboarding(true);
+        }
+      } catch (err) {
+        console.error("Onboarding check failed:", err);
+      }
+      setChecking(false);
+    }
+
+    check();
+  }, [user]);
+
+  // Auth still loading OR onboarding check running
+  if (checking || user === undefined) return <div>Loading…</div>;
 
   // Not logged in
   if (user === null) return <Navigate to="/login" replace />;
 
-  // Logged in
+  // Logged in but not onboarded
+  if (shouldGoOnboarding) return <Navigate to="/onboarding" replace />;
+
+  // Logged in AND onboarded
   return children;
 }
 
@@ -39,6 +67,7 @@ function LoginPage() {
     e.preventDefault();
     try {
       await login(form.email, form.password);
+
       navigate("/app", { replace: true }); // <-- NO MORE window reload
     } catch {
       alert("Login failed");
@@ -68,7 +97,7 @@ function LoginPage() {
 
         <p>
           Don't have an account?{" "}
-          <link href="/signup" className="underline">Signup</link>
+          <Link to="/signup" className="underline">Signup</Link>
         </p>
       </form>
     </div>
@@ -86,7 +115,7 @@ function SignupPage() {
     e.preventDefault();
     await API.post("/auth/signup", form);
     alert("Signup successful!");
-    navigate("/app", { replace: true });
+    navigate("/Onboarding", { replace: true });
   };
 
   return (
@@ -111,7 +140,7 @@ function SignupPage() {
         <button className="bg-black text-white p-2 rounded">Signup</button>
 
         <p>
-          Have an account? <link href="/login" className="underline">Login</link>
+          Have an account? <Link to="/login" className="underline">Login</Link>
         </p>
       </form>
     </div>
@@ -175,6 +204,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route
             path="/app"
             element={

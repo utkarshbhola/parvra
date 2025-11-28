@@ -12,7 +12,7 @@ export default function SignupPage() {
     try {
       await signup(form.email, form.password);
       alert("Signup successful!");
-      navigate("/app", { replace: true });
+      navigate("/Onboading", { replace: true });
     } catch (err) {
       console.error("Signup failed:", err);
       alert(err.response?.data?.error || "Signup failed");

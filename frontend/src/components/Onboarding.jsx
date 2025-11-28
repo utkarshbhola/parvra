@@ -1,15 +1,14 @@
-import { useState, useContext } from "react";
+import { useState} from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api/AxiosInstance";
-import { AuthContext } from "../Context/AuthContext";
 
 export default function Onboarding() {
-  const { fetchUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     username: "",
     bio: "",
+    phone_number: "",
     avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Default",
   });
 
@@ -21,9 +20,8 @@ export default function Onboarding() {
     e.preventDefault();
 
     try {
-      await API.put("/onboarding", form);
-      await fetchUser();             // refresh AuthContext
-      navigate("/app");              // go to main app
+      await API.put("/profiles/onboarding", form);
+      navigate("/app", { replace: true });        // go to main app
     } catch (err) {
       alert(err.response?.data?.error || "Something went wrong");
     }
@@ -68,7 +66,13 @@ export default function Onboarding() {
           className="p-2 border rounded"
           onChange={(e) => setForm({ ...form, bio: e.target.value })}
         />
-
+        {/* Phone Number */}
+        <input
+          type="text"
+          placeholder="Phone Number (optional)"
+          className="p-2 border rounded"
+          onChange={(e) => setForm({ ...form, phone_number: e.target.value })}
+        />
         <button className="bg-black text-white p-2 rounded">
           Save & Continue
         </button>

@@ -1,34 +1,45 @@
-import { useState, useContext } from "react";
-import { X, Star } from "lucide-react";
+import { useState, useContext, useEffect } from "react";
+import { X } from "lucide-react";
 import { AuthContext } from "../Context/AuthContext";
 import API from "../api/AxiosInstance";
 
 export default function ProfilePopup({ onClose }) {
   const { user, fetchUser } = useContext(AuthContext);
 
+  // Local editable copies
   const [editing, setEditing] = useState(false);
-  const [bio, setBio] = useState(user?.bio || "");
+  const [bio, setBio] = useState("");
+  const [phone, setPhone] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Defaults from DB
-  const username = user?.username || "User";
+  // Sync local state ONLY after user loads
+  useEffect(() => {
+    if (user) {
+      setBio(user.bio || "");
+      setPhone(user.Phone_number || "");
+    }
+  }, [user]);
+
+  if (!user) return null; // safety
+
+  const username = user.username || "User";
   const avatar =
-    user?.profile_photo_url ||
+    user.profile_photo_url ||
     `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
 
-  const events = user?.events_count || 0; // you will fill this from DB later
-  const communities = user?.communities_count || 0;
-
-  const stars = Math.min(5, Math.floor(events / 10));
-
-  async function saveBio() {
+  async function saveChanges() {
     setSaving(true);
     try {
-      await API.put("/profiles/update", { bio });
-      await fetchUser(); // refresh user info in context
+      await API.put("/profiles/update", {
+        bio,
+        phone_number: phone,
+      });
+
+      await fetchUser();   // refresh global user
       setEditing(false);
+
     } catch (err) {
-      alert("Failed to update bio");
+      alert(err.response?.data?.error || "Failed to update");
     }
     setSaving(false);
   }
@@ -45,7 +56,8 @@ export default function ProfilePopup({ onClose }) {
           <X />
         </button>
 
-        <div className="flex flex-col items-center text-center space-y-3">
+        {/* CONTENT */}
+        <div className="flex flex-col items-center text-center space-y-4">
 
           {/* Avatar */}
           <img
@@ -57,7 +69,7 @@ export default function ProfilePopup({ onClose }) {
           {/* Username */}
           <h2 className="text-2xl font-bold text-gray-900">{username}</h2>
 
-          {/* Editable Bio */}
+          {/* BIO */}
           {editing ? (
             <textarea
               value={bio}
@@ -70,40 +82,28 @@ export default function ProfilePopup({ onClose }) {
             </p>
           )}
 
+          {/* Phone Number */}
+          {editing ? (
+            <input
+              value={phone}
+              placeholder="Phone Number"
+              onChange={(e) => setPhone(e.target.value)}
+              className="border p-2 rounded w-full text-gray-800"
+            />
+          ) : (
+            <p className="text-gray-700">📱 {phone || "No phone added"}</p>
+          )}
+
+          {/* Edit / Save Button */}
           <button
-            onClick={editing ? saveBio : () => setEditing(true)}
+            onClick={editing ? saveChanges : () => setEditing(true)}
             className="text-sm text-yellow-600 hover:underline"
           >
-            {editing ? (saving ? "Saving..." : "Save") : "Edit bio"}
+            {editing ? (saving ? "Saving..." : "Save Changes") : "Edit Profile"}
           </button>
 
-          {/* Stats Row */}
-          <div className="flex justify-around w-full mt-4 text-gray-800">
-            <div className="text-center">
-              <p className="text-lg font-semibold">{events}</p>
-              <p className="text-sm text-gray-500">Events</p>
-            </div>
-
-            <div className="text-center">
-              <p className="text-lg font-semibold">{communities}</p>
-              <p className="text-sm text-gray-500">Communities</p>
-            </div>
-          </div>
-
-          {/* Star Rating */}
-          <div className="flex justify-center mt-4">
-            {[...Array(stars)].map((_, i) => (
-              <Star key={i} className="text-yellow-500 fill-yellow-500 w-5 h-5" />
-            ))}
-            {[...Array(5 - stars)].map((_, i) => (
-              <Star key={i} className="text-gray-300 w-5 h-5" />
-            ))}
-          </div>
-
-          <p className="text-sm text-gray-500">
-            {stars}/5 Stars ({events} events)
-          </p>
         </div>
+
       </div>
     </div>
   );
