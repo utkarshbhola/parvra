@@ -1,7 +1,6 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, Link } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./Context/AuthContext";
-import Onboarding from "./components/Onboarding";
 import Sidebar from "./components/Sidebar";
 import SlidePanel from "./components/Sidepanel";
 import Navbar from "./components/Navbar";
@@ -97,7 +96,7 @@ function LoginPage() {
 
         <p>
           Don't have an account?{" "}
-          <Link to="/signup" className="underline">Signup</Link>
+          <a href="/signup" className="underline">Signup</a>
         </p>
       </form>
     </div>
@@ -140,7 +139,7 @@ function SignupPage() {
         <button className="bg-black text-white p-2 rounded">Signup</button>
 
         <p>
-          Have an account? <Link to="/login" className="underline">Login</Link>
+          Have an account? <a href="/login" className="underline">Login</a>
         </p>
       </form>
     </div>
