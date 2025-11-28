@@ -6,22 +6,22 @@ const router = express.Router();
 router.get("/check", authMiddleware, async (req, res) => {
   const userId = req.user.id;
 
-  const { data, error } = await supabase
+  const { data: profile, error } = await supabase
     .from("profiles")
     .select("id")
     .eq("id", userId)
-    .single();
+    .maybeSingle();  // <-- FIXED
 
-  if (error && error.code !== "PGRST116") {
-    // real error
+  if (error) {
+    console.log("Supabase error:", error);
     return res.status(400).json({ error: error.message });
   }
 
-  // If data exists -> profile exists
-  const exists = !!data;
+  const exists = !!profile;  // profile = null if no row exists
 
   res.json({ exists });
 });
+
 
 router.put("/update", authMiddleware, async (req, res) => {
   const { bio } = req.body;
