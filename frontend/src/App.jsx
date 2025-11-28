@@ -115,7 +115,7 @@ function SignupPage() {
     e.preventDefault();
     await API.post("/auth/signup", form);
     alert("Signup successful!");
-    navigate("/onboa", { replace: true });
+    navigate("/onboarding", { replace: true });
   };
 
   return (
