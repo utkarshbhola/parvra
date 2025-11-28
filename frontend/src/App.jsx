@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, Link } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./Context/AuthContext";
-import Onboarding from "./components/Onboarding";  // <-- Make sure this import exists
+import Onboarding from "./components/Onboarding";
 import Sidebar from "./components/Sidebar";
 import SlidePanel from "./components/Sidepanel";
 import Navbar from "./components/Navbar";
@@ -11,7 +11,6 @@ import FriendsPanel from "./components/FriendsPanel";
 import CommunitiesPanel from "./components/CommunitiesPanel";
 import EventsPanel from "./components/EventsPanel";
 import API from "./api/AxiosInstance";
-
 /* ================================
    FIXED PROTECTED ROUTE
 ================================ */
@@ -22,12 +21,13 @@ function ProtectedRoute({ children }) {
 
   useEffect(() => {
     async function check() {
-      if (user === undefined) return;   
-      if (user === null) {              
+      if (user === undefined) return;   // still loading auth
+      if (user === null) {              // not logged in
         setChecking(false);
         return;
       }
 
+      // Logged in → check onboarding status
       try {
         const res = await API.get("/profiles/check");
         if (!res.data.exists) {
@@ -42,26 +42,33 @@ function ProtectedRoute({ children }) {
     check();
   }, [user]);
 
+  // Auth still loading OR onboarding check running
   if (checking || user === undefined) return <div>Loading…</div>;
+
+  // Not logged in
   if (user === null) return <Navigate to="/login" replace />;
+
+  // Logged in but not onboarded
   if (shouldGoOnboarding) return <Navigate to="/onboarding" replace />;
 
+  // Logged in AND onboarded
   return children;
 }
 
 /* ================================
-   LOGIN PAGE
+   LOGIN PAGE (FIXED)
 ================================ */
 function LoginPage() {
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // <-- useNavigate correctly
   const [form, setForm] = useState({ email: "", password: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await login(form.email, form.password);
-      navigate("/app", { replace: true });
+
+      navigate("/app", { replace: true }); // <-- NO MORE window reload
     } catch {
       alert("Login failed");
     }
@@ -72,20 +79,25 @@ function LoginPage() {
       <form className="flex flex-col gap-4 w-80" onSubmit={handleSubmit}>
         <h2 className="text-xl font-semibold">Login</h2>
 
-        <input type="email" className="p-2 border rounded"
-               placeholder="Email"
-               onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        <input
+          type="email"
+          className="p-2 border rounded"
+          placeholder="Email"
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
 
-        <input type="password" className="p-2 border rounded"
-               placeholder="Password"
-               onChange={(e) => setForm({ ...form, password: e.target.value })} />
+        <input
+          type="password"
+          className="p-2 border rounded"
+          placeholder="Password"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+        />
 
         <button className="bg-black text-white p-2 rounded">Login</button>
 
         <p>
           Don't have an account?{" "}
-          <Link to="/signup" className="underline">Signup</Link> 
-          {/* ❌ You wrote <a> earlier; this is the FIX */}
+          <Link to="/signup" className="underline">Signup</Link>
         </p>
       </form>
     </div>
@@ -103,8 +115,7 @@ function SignupPage() {
     e.preventDefault();
     await API.post("/auth/signup", form);
     alert("Signup successful!");
-    navigate("/Onboarding", { replace: true }); 
-    {/* ❌ FIXED capitalization from /Onboarding */}
+    navigate("/onboa", { replace: true });
   };
 
   return (
@@ -112,20 +123,24 @@ function SignupPage() {
       <form className="flex flex-col gap-4 w-80" onSubmit={handleSubmit}>
         <h2 className="text-xl font-semibold">Signup</h2>
 
-        <input type="email" className="p-2 border rounded"
-               placeholder="Email"
-               onChange={(e) => setForm({ ...form, email: e.target.value })} />
+        <input
+          type="email"
+          className="p-2 border rounded"
+          placeholder="Email"
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+        />
 
-        <input type="password" className="p-2 border rounded"
-               placeholder="Password"
-               onChange={(e) => setForm({ ...form, password: e.target.value })} />
+        <input
+          type="password"
+          className="p-2 border rounded"
+          placeholder="Password"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+        />
 
         <button className="bg-black text-white p-2 rounded">Signup</button>
 
         <p>
-          Have an account?{" "}
-          <Link to="/login" className="underline">Login</Link>  
-          {/* ❌ FIXED <a> to <Link> */}
+          Have an account? <Link to="/login" className="underline">Login</Link>
         </p>
       </form>
     </div>
@@ -133,12 +148,54 @@ function SignupPage() {
 }
 
 /* ================================
-   MAIN APP UI (unchanged)
+   MAIN APP UI
 ================================ */
-function MainApp() { /* ... */ }
+function MainApp() {
+  const [activePanel, setActivePanel] = useState(null);
+
+  const getPanelContent = () => {
+    switch (activePanel) {
+      case "communities":
+        return <CommunitiesPanel />;
+      case "events":
+        return <EventsPanel />;
+      case "friends":
+        return <FriendsPanel />;
+      default:
+        return null;
+    }
+  };
+
+  const isPanelOpen =
+    activePanel && activePanel !== "create" && getPanelContent() !== null;
+
+  return (
+    <div className="flex flex-col h-screen overflow-hidden">
+      <Navbar />
+
+      <div className="flex flex-1 overflow-hidden">
+        <Sidebar activePanel={activePanel} setActivePanel={setActivePanel} />
+
+        <SlidePanel
+          isOpen={isPanelOpen}
+          onClose={() => setActivePanel(null)}
+          content={getPanelContent()}
+        />
+
+        <div className="flex-1 relative overflow-hidden z-0">
+          <MapView />
+        </div>
+      </div>
+
+      {activePanel === "create" && (
+        <CreatePopup onClose={() => setActivePanel(null)} />
+      )}
+    </div>
+  );
+}
 
 /* ================================
-   ROUTER
+   FINAL ROUTER
 ================================ */
 export default function App() {
   return (
@@ -147,7 +204,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/Onboarding" element={<Onboarding />} /> 
+          <Route path="/onboarding" element={<Onboarding />} />
           <Route
             path="/app"
             element={
@@ -156,6 +213,8 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* default route */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
